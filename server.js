@@ -17,11 +17,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ✅ Step 2: Database Connection
-
-
 mongoose.connect('mongodb+srv://gofficial067:LJWRF4uHuc0bhTQO@cluster0.lqq4unw.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0')
-
-
     .then(() => console.log('✅ Database Connected'))
     .catch(err => console.error(err));
 
@@ -29,9 +25,8 @@ mongoose.connect('mongodb+srv://gofficial067:LJWRF4uHuc0bhTQO@cluster0.lqq4unw.m
 const userSchema = new mongoose.Schema({
     name: String,
     code: String,
-    role: { type: String, default: "user" }  // New field added
+    role: { type: String, default: "user" }
 });
-
 
 const receiptSchema = new mongoose.Schema({
     customerId: String,
@@ -62,7 +57,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
 // ✅ Step 5: Receipt Generate Route
 app.post('/generate', async (req, res) => {
     const { customerId, amount, enteredName, enteredCode } = req.body;
@@ -88,7 +82,11 @@ app.post('/generate', async (req, res) => {
         .replace('{{DATE}}', formattedDate)
         .replace('{{TRANSACTION_ID}}', transactionId);
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true
+    });
+
     const page = await browser.newPage();
     await page.setContent(filledHtml, { waitUntil: 'networkidle0' });
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
@@ -121,5 +119,4 @@ app.get('/all-entries', async (req, res) => {
     res.json(receipts);
 });
 
-
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
