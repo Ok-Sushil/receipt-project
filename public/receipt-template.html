@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>रसीद</title>
+    <style>
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid black;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .header img {
+            width: 80px;
+        }
+        h1, h3 {
+            text-align: center;
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        td {
+            border: none;
+             padding: 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="http://localhost:3000/logo1.png" alt="Logo 1">
+        <img src="http://localhost:3000/logo2.png" alt="Logo 2">
+    </div>
+
+    <h1>दक्षिणांचल विद्युत वितरण निगम लिमिटेड</h1>
+    <h3>(भुगतान पावती मूल प्रति)</h3>
+
+    <table>
+        <tr>
+            <td>रसीद संख्या :</td>
+            <td>{{RECEIPT_NO}}</td>
+            <td>द.वि.वि.नि.लि. संदर्भ संख्या :</td>
+            <td>96242</td>
+        </tr>
+        <tr>
+            <td>भुगतान प्रकार :</td>
+            <td>Wallet (CSC)</td>
+            <td>भुगतान तिथि :</td>
+            <td>{{DATE}}</td>
+        </tr>
+        <tr>
+            <td>खाता संख्या :</td>
+            <td>{{CUSTOMER_ID}}</td>
+            <td>उपभोक्ता का नाम :</td>
+            <td>{{NAME}}</td>
+        </tr>
+        <tr>
+            <td>कुल देय राशि :</td>
+            <td>₹ {{AMOUNT}}</td>
+            <td>प्राप्त धनराशि (अंकों में) :</td>
+            <td>₹ {{AMOUNT}}</td>
+        </tr>
+        <tr>
+            <td>शब्दों में :</td>
+            <td colspan="3">₹ {{AMOUNT_WORDS}}</td>
+        </tr>
+        <tr>
+            <td>बकाया राशि :</td>
+            <td>₹ 0.00</td>
+            <td>छूट :</td>
+            <td>₹ 0.00</td>
+        </tr>
+        <tr>
+            <td>भुगतान प्राप्तकर्ता की आई. डी. :</td>
+            <td colspan="3">475334150013</td>
+        </tr>
+        <tr>
+            <td>रसीद छापने वाले की आई. डी. :</td>
+            <td>475334150013</td>
+            <td>रसीद छापने की तिथि :</td>
+            <td>{{DATE}}</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        यह एक कंप्यूटर जनित रसीद है, अतः हस्ताक्षर की आवश्यकता नहीं है। <br>
+        राष्ट्र एवम स्वहित में बिजली बचायें। <br><br>
+        कृपया विद्युत बिल का ऑनलाइन भुगतान अपने निकटतम जन सुविधा केंद्र पर करें। <br>
+        CSC Transaction Id : {{TRANSACTION_ID}}
+    </div>
+
+</body>
+</html>

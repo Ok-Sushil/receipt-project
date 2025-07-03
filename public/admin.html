@@ -1,0 +1,139 @@
+<link rel="stylesheet" href="style.css">
+<div class="container"></div>
+<h2>सभी रिकॉर्ड</h2>
+
+<!-- Filters Section -->
+<label>यूजर चुनें:</label>
+<select id="userFilter">
+    <option value="">सभी</option>
+</select>
+
+<label>तारीख चुनें:</label>
+<input type="date" id="dateFilter">
+
+<label>सर्च:</label>
+<input type="text" id="searchBox" placeholder="Customer ID, Name, Amount...">
+
+<button onclick="applyFilters()">फिल्टर लगाएं</button>
+
+    <button onclick="exportTable()">CSV में एक्सपोर्ट करें</button>
+
+
+<!-- Records Table -->
+<table border="1" style="margin-top:20px; width:100%; text-align:left;">
+    <thead>
+        <tr>
+            <th>यूजर</th>
+            <th>कस्टमर आईडी</th>
+            <th>नाम</th>
+            <th>पता</th>
+            <th>राशि</th>
+            <th>तारीख</th>
+            <th>ट्रांजैक्शन आईडी</th>
+        </tr>
+    </thead>
+    <tbody id="recordsTable">
+    </tbody>
+</table>
+
+</div>  <!-- यही है closing tag -->
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const name = urlParams.get('name');
+const code = urlParams.get('code');
+
+let allData = [];
+
+fetch(`/all-entries?name=${name}&code=${code}`)
+    .then(res => res.json())
+    .then(data => {
+        allData = data;
+        populateUserDropdown();
+        renderTable(allData);
+    });
+
+function populateUserDropdown() {
+    const users = [...new Set(allData.map(d => d.enteredBy.name))];
+    const dropdown = document.getElementById('userFilter');
+    users.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u;
+        opt.textContent = u;
+        dropdown.appendChild(opt);
+    });
+}
+
+function applyFilters() {
+    const user = document.getElementById('userFilter').value;
+    const date = document.getElementById('dateFilter').value;
+    const search = document.getElementById('searchBox').value.toLowerCase();
+
+    const filtered = allData.filter(r => {
+        const dateMatch = date ? r.date.startsWith(date) : true;
+        const userMatch = user ? r.enteredBy.name === user : true;
+
+        const searchMatch = search
+            ? (
+                r.customerId.toLowerCase().includes(search) ||
+                r.customerName.toLowerCase().includes(search) ||
+                r.address.toLowerCase().includes(search) ||
+                r.amount.toLowerCase().includes(search) ||
+                r.transactionId.toLowerCase().includes(search)
+            )
+            : true;
+
+        return dateMatch && userMatch && searchMatch;
+    });
+
+    renderTable(filtered);
+}
+
+function renderTable(data) {
+    const table = document.getElementById('recordsTable');
+    table.innerHTML = '';
+
+    if (data.length === 0) {
+        table.innerHTML = `<tr><td colspan="7">कोई डेटा नहीं मिला।</td></tr>`;
+        return;
+    }
+
+    data.forEach(record => {
+        const row = `
+            <tr>
+                <td>${record.enteredBy.name}</td>
+                <td>${record.customerId}</td>
+                <td>${record.customerName}</td>
+                <td>${record.address}</td>
+                <td>${record.amount}</td>
+                <td>${record.date}</td>
+                <td>${record.transactionId}</td>
+            </tr>
+        `;
+        table.innerHTML += row;
+    });
+}
+
+
+
+function exportTable() {
+    const table = document.getElementById('recordsTable');
+    let csv = 'यूजर,कस्टमर आईडी,नाम,पता,राशि,तारीख,ट्रांजैक्शन आईडी\n';
+
+    Array.from(table.querySelectorAll('tr')).forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td'));
+        if (cols.length) {
+            const rowData = cols.map(td => `"${td.innerText}"`).join(',');
+            csv += rowData + '\n';
+        }
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'records.csv');
+    link.click();
+}
+
+</script>

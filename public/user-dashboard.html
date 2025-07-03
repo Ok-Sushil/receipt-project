@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="style.css">
+
+
+<div class="container">
+
+<h2>रसीद जनरेट करें</h2>
+<form action="/generate" method="POST" target="_blank">
+    <label>कस्टमर आईडी:</label>
+    <input type="text" name="customerId" required>
+    
+    <label>राशि:</label>
+    <input type="text" name="amount" required>
+
+    <input type="hidden" name="enteredName" id="enteredName">
+    <input type="hidden" name="enteredCode" id="enteredCode">
+
+    <button type="submit">रसीद देखें</button>
+</form>
+</div>
+
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+document.getElementById('enteredName').value = urlParams.get('name');
+document.getElementById('enteredCode').value = urlParams.get('code');
+</script>
