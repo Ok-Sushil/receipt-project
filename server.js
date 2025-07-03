@@ -82,10 +82,10 @@ app.post('/generate', async (req, res) => {
         .replace('{{DATE}}', formattedDate)
         .replace('{{TRANSACTION_ID}}', transactionId);
 
-    const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true
-    });
+const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: "new"
+});
 
     const page = await browser.newPage();
     await page.setContent(filledHtml, { waitUntil: 'networkidle0' });
