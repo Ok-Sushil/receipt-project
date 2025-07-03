@@ -83,11 +83,11 @@ app.post('/generate', async (req, res) => {
         .replace('{{TRANSACTION_ID}}', transactionId);
 
 
-        const browser = await puppeteer.launch({
+ const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    headless: true,
-    executablePath: process.env.CHROME_BIN || '/usr/bin/google-chrome'
+    headless: "new"
 });
+
 
     const page = await browser.newPage();
     await page.setContent(filledHtml, { waitUntil: 'networkidle0' });
