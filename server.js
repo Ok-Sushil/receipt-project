@@ -1,14 +1,9 @@
-// ✅ Step 1: Install Required Packages
-// express, mongoose, puppeteer, body-parser
-// npm install express mongoose puppeteer body-parser
-
 const express = require('express');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const path = require('path');
 const bodyParser = require('body-parser');
-const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,12 +11,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// ✅ Step 2: Database Connection
+// ✅ Database Connection
 mongoose.connect('mongodb+srv://gofficial067:LJWRF4uHuc0bhTQO@cluster0.lqq4unw.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0')
     .then(() => console.log('✅ Database Connected'))
     .catch(err => console.error(err));
 
-// ✅ Step 3: MongoDB Schemas
+// ✅ MongoDB Schemas
 const userSchema = new mongoose.Schema({
     name: String,
     code: String,
@@ -44,7 +39,7 @@ const receiptSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Receipt = mongoose.model('Receipt', receiptSchema);
 
-// ✅ Step 4: Login Route
+// ✅ Login Route
 app.post('/login', async (req, res) => {
     const { name, code } = req.body;
     const user = await User.findOne({ name, code });
@@ -57,7 +52,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// ✅ Step 5: Receipt Generate Route
+// ✅ Receipt Generate Route
 app.post('/generate', async (req, res) => {
     const { customerId, amount, enteredName, enteredCode } = req.body;
 
@@ -67,8 +62,8 @@ app.post('/generate', async (req, res) => {
     const today = new Date();
     const formattedDate = today.toLocaleDateString() + ' ' + today.toLocaleTimeString();
 
-    const cseCommand = `python cse_calculation.py ${customerId}`;
-    const transactionId = execSync(cseCommand).toString().trim();
+    // ✅ Simple Node.js Based Transaction ID
+    const transactionId = (Number(customerId) * 999 + Math.floor(Math.random() * 1000)).toString();
 
     const receiptHtml = fs.readFileSync('./public/receipt-template.html', 'utf8');
 
@@ -82,12 +77,10 @@ app.post('/generate', async (req, res) => {
         .replace('{{DATE}}', formattedDate)
         .replace('{{TRANSACTION_ID}}', transactionId);
 
-
- const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    headless: "new"
-});
-
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: "new"
+    });
 
     const page = await browser.newPage();
     await page.setContent(filledHtml, { waitUntil: 'networkidle0' });
@@ -111,7 +104,7 @@ app.post('/generate', async (req, res) => {
     res.send(pdfBuffer);
 });
 
-// ✅ Step 6: Admin Route to View Entries
+// ✅ Admin Route to View Entries
 app.get('/all-entries', async (req, res) => {
     const { name, code } = req.query;
     const user = await User.findOne({ name, code });
